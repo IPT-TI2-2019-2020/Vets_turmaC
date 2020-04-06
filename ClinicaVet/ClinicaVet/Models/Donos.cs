@@ -17,6 +17,7 @@ namespace ClinicaVet.Models {
 
       public string Nome { get; set; }
 
+      [RegularExpression("[12356][0-9]{8}")]
       public string NIF { get; set; }
 
       /// <summary>
