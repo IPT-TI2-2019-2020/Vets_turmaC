@@ -39,7 +39,7 @@ namespace ClinicaVet.Models {
       /// <summary>
       ///  lista de 'consultas' a que o Veterinário está associado
       /// </summary>
-      public ICollection<Consultas> Consultas { get; set; }
+      public virtual ICollection<Consultas> Consultas { get; set; }
 
    }
 }
