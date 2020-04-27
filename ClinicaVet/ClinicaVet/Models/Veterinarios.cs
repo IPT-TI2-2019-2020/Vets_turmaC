@@ -33,7 +33,7 @@ namespace ClinicaVet.Models {
       [Display(Name = "Nº Cédula Profissional")]
       public string NumCedulaProf { get; set; }
 
-      [Required]
+     // [Required]
       public string Foto { get; set; }
 
       /// <summary>

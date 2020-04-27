@@ -21,6 +21,12 @@ namespace ClinicaVet.Data {
       public VetsDB(DbContextOptions<VetsDB> options) : base(options) { }
 
 
+      // // ativação do Lazy Loading
+      //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+      //   optionsBuilder.UseLazyLoadingProxies();
+      //}
+
+
 
       protected override void OnModelCreating(ModelBuilder modelBuilder) {
 

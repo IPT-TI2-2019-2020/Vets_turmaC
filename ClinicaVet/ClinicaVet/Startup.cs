@@ -32,10 +32,13 @@ namespace ClinicaVet {
          services.AddControllersWithViews();
 
          //****************************************************************************
-         // especificação do 'tipo' e 'localização' da BD
-         services.AddDbContext<VetsDB>(options =>
-            options.UseSqlServer(
-                Configuration.GetConnectionString("ConnectionDB")));
+         // especificação do 'tipo' e 'localização' da BD +
+         // ativação do 'lazy loading'
+         services.AddDbContext<VetsDB>(options => 
+              options
+                  .UseSqlServer(Configuration.GetConnectionString("ConnectionDB"))
+                 // .UseLazyLoadingProxies()
+         );
          //****************************************************************************
 
       }

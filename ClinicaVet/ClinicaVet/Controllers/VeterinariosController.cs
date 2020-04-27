@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClinicaVet.Data;
 using ClinicaVet.Models;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace ClinicaVet.Controllers {
 
@@ -17,11 +20,15 @@ namespace ClinicaVet.Controllers {
       /// </summary>
       private readonly VetsDB db;
 
+      /// <summary>
+      /// atributo que recolhe nele os dados do Servidor
+      /// </summary>
+      private readonly IWebHostEnvironment _caminho;
 
 
-
-      public VeterinariosController(VetsDB context) {
-         db = context;
+      public VeterinariosController(VetsDB context, IWebHostEnvironment caminho) {
+         this.db = context;
+         this._caminho = caminho;
       }
 
 
@@ -43,7 +50,7 @@ namespace ClinicaVet.Controllers {
 
       // GET: Veterinarios/Details/5
       /// <summary>
-      /// Mostra os detalhes de um Veterinário
+      /// Mostra os detalhes de um Veterinário, usando Lazy Loading
       /// </summary>
       /// <param name="id">valor da PK do veterinário. Admite um valor Null, por causa do sinal ? </param>
       /// <returns></returns>
@@ -73,6 +80,40 @@ namespace ClinicaVet.Controllers {
 
 
 
+      // GET: Veterinarios/Details/5
+      /// <summary>
+      /// Mostra os detalhes de um Veterinário, usando Eager Loading
+      /// </summary>
+      /// <param name="id">valor da PK do veterinário. Admite um valor Null, por causa do sinal ? </param>
+      /// <returns></returns>
+      public async Task<IActionResult> Details2(int? id) {
+
+         if (id == null) {
+            return RedirectToAction("Index");
+         }
+
+         // é uma forma diferente de escrever o seguinte comando
+         /// SELECT * 
+         /// FROM db.Veterinarios v, db.Consultas c, db.Animais a, db.Donos d
+         /// WHERE c.VeterinarioFK=v.ID AND
+         ///       c.AnimalFK=a.ID AND
+         ///       a.AnimalFK=d.ID AND
+         ///       v.ID = id
+
+         // esta expressão é escrita em LINQ
+         var veterinario = await db.Veterinarios
+                                   .Include(v => v.Consultas)
+                                   .ThenInclude(a => a.Animal)
+                                   .ThenInclude(d => d.Dono)
+                                   .FirstOrDefaultAsync(v => v.ID == id);
+
+         if (veterinario == null) {
+            return RedirectToAction("Index");
+         }
+
+         return View(veterinario);
+      }
+
 
 
       // GET: Veterinarios/Create
@@ -97,22 +138,64 @@ namespace ClinicaVet.Controllers {
       /// <returns></returns>
       [HttpPost]
       [ValidateAntiForgeryToken]
-      public async Task<IActionResult> Create([Bind("ID,Nome,NumCedulaProf,Foto")] Veterinarios veterinario) {
+      public async Task<IActionResult> Create([Bind("ID,Nome,NumCedulaProf,Foto")] Veterinarios veterinario, IFormFile fotoVet) {
 
-         // falta validar os dados
+         //***************************************
+         // processar a imagem
+         //***************************************
 
+         // vars. auxiliares
+         bool haFicheiro = false;
+         string caminhoCompleto = "";
 
+         // será q há imagem?
+         if (fotoVet == null) {
+            // o utilizador não fez upload de um ficheiro
+            veterinario.Foto = "avatar.png";
+         }
+         else {
+            // existe fotografia.
+            // Mas, será boa?
+            if (fotoVet.ContentType == "image/jpeg" ||
+                fotoVet.ContentType == "image/png") {
+               // estamos perante uma boa foto
+               // temos de gerar um nome para o ficheiro
+               Guid g;
+               g = Guid.NewGuid();
+               // obter a extensão do ficheiro
+               string extensao = Path.GetExtension(fotoVet.FileName).ToLower();
+               string nomeFicheiro = g.ToString() + extensao;
+               // onde guardar o ficheiro
+               caminhoCompleto = Path.Combine(_caminho.WebRootPath, "imagens\\vets", nomeFicheiro);
+               // atribuir o nome do ficheiro ao Veterinário
+               veterinario.Foto = nomeFicheiro;
+               // marcar q existe uma fotografia
+               haFicheiro = true;
+            }
+            else {
+               // o ficheiro não é válido
+               veterinario.Foto = "avatar.png";
+            }
+         }
 
+         try {
+            if (ModelState.IsValid) {
+               // adiciona o novo veterinário à BD, mas na memória do servidor ASP .NET
+               db.Add(veterinario);
+               // consolida os dados no Servidor BD (commit)
+               await db.SaveChangesAsync();
+               // será q há foto para gravar?
+               if (haFicheiro) {
+                  using var stream = new FileStream(caminhoCompleto, FileMode.Create);
+                  await fotoVet.CopyToAsync(stream);
+               }
+               // redireciona a ação para a View do Index
+               return RedirectToAction(nameof(Index));
+            }
+         }
+         catch (Exception) {
 
-
-         if (ModelState.IsValid) {
-            // adiciona o novo veterinário à BD, mas na memória do servidor ASP .NET
-            db.Add(veterinario);
-            // consolida os dados no Servidor BD (commit)
-            await db.SaveChangesAsync();
-
-            // redireciona a a~ção para a View do Index
-            return RedirectToAction(nameof(Index));
+            throw;
          }
 
          // qd ocorre um erro, reenvio os dados do veterinário para a view da criação
