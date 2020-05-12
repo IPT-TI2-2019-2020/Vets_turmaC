@@ -45,7 +45,14 @@ namespace ClinicaVet.Controllers {
       }
 
 
+      // GET: Veterinarios
+      public async Task<IActionResult> Index2() {
 
+         // LINQ
+         // db.Veterinarios.ToListAsync()  <=>    SELECT * FROM Veterinarios;
+
+         return View(await db.Veterinarios.ToListAsync());
+      }
 
 
       // GET: Veterinarios/Details/5
@@ -106,6 +113,12 @@ namespace ClinicaVet.Controllers {
                                    .ThenInclude(a => a.Animal)
                                    .ThenInclude(d => d.Dono)
                                    .FirstOrDefaultAsync(v => v.ID == id);
+
+
+         var vvv = from v in db.Veterinarios
+                   select v;
+
+
 
          if (veterinario == null) {
             return RedirectToAction("Index");
