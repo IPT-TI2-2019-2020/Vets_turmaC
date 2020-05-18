@@ -6,18 +6,26 @@
 
 <h1>Veterinários</h1>
 
-<p>
-   <a asp-action="Create">Adicionar novo veterinário</a>
-</p>
+
+@*@if (User.Identity.IsAuthenticated) {*@
+@if (User.IsInRole("Administrativo")) {
+   <p>
+      <a asp-action="Create">Adicionar novo veterinário</a>
+   </p>
+}
+
+
 <table class="table">
    <thead>
       <tr>
          <th>
             @Html.DisplayNameFor(model => model.Nome)
          </th>
-         <th>
-            @Html.DisplayNameFor(model => model.NumCedulaProf)
-         </th>
+         @if (User.Identity.IsAuthenticated) {
+            <th>
+               @Html.DisplayNameFor(model => model.NumCedulaProf)
+            </th>
+         }
          <th>
             @Html.DisplayNameFor(model => model.Foto)
          </th>
@@ -30,18 +38,30 @@
             <td>
                @Html.DisplayFor(modelItem => item.Nome)
             </td>
-            <td>
-               @Html.DisplayFor(modelItem => item.NumCedulaProf)
-            </td>
+            @if (User.Identity.IsAuthenticated) {
+               <td>
+                  @Html.DisplayFor(modelItem => item.NumCedulaProf)
+               </td>
+            }
             <td>
                <a asp-action="Details" asp-route-id="@item.ID">
                   <img src="~/Imagens/Vets/@item.Foto" width="100" alt="aqui deveria aparecer a foto do @item.Nome" title="@item.Nome" />
                </a>
             </td>
             <td>
-               <a asp-action="Edit" asp-route-id="@item.ID">Editar</a> |
-               <a asp-action="Details" asp-route-id="@item.ID">Detalhes</a> |
-               <a asp-action="Delete" asp-route-id="@item.ID">Apagar</a>
+               <a asp-action="Details" asp-route-id="@item.ID">Detalhes</a>
+               @if (User.IsInRole("Administrativo") || User.IsInRole("Veterinario")) {
+                  <text>
+                     |
+                     <a asp-action="Edit" asp-route-id="@item.ID">Editar</a>
+                  </text>
+               }
+               @if (User.IsInRole("Administrativo")) {
+                  <text>
+                     |
+                     <a asp-action="Delete" asp-route-id="@item.ID"> Apagar </a>
+                  </text>
+               }
             </td>
          </tr>
       }

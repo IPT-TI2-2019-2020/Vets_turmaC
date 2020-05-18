@@ -142,7 +142,7 @@ namespace ClinicaVet.Controllers {
       /// </summary>
       /// <returns></returns>
 
-      [Authorize]
+      [Authorize(Roles = "Administrativo")]
       public IActionResult Create() {
          return View();
       }
@@ -160,7 +160,7 @@ namespace ClinicaVet.Controllers {
       /// <returns></returns>
       [HttpPost]
       [ValidateAntiForgeryToken]
-      [Authorize]
+      [Authorize(Roles = "Administrativo")]
       public async Task<IActionResult> Create([Bind("ID,Nome,NumCedulaProf,Foto")] Veterinarios veterinario, IFormFile fotoVet) {
 
          //***************************************
@@ -230,6 +230,13 @@ namespace ClinicaVet.Controllers {
 
 
       // GET: Veterinarios/Edit/5
+      //  [AllowAnonymous]  // anula a obrigação de o User estar autenticado
+      //  [Authorize]       // qq pessoa autenticada, tem acesso a este recurso
+
+      [Authorize(Roles = "Administrativo,Veterinario")]  // qq pessoa que pertenca a UM destes Roles, pode aceder ao recurso
+
+      ////  [Authorize(Roles = "Administrativo")]   // se se quiser que o User seja EM SIMULTÂNEO Veterinário e Administrativo
+      ////  [Authorize(Roles = "Veterinario")]      // é preciso adicionar estas duas anotações
       public async Task<IActionResult> Edit(int? id) {
 
          if (id == null) {
@@ -262,6 +269,7 @@ namespace ClinicaVet.Controllers {
       // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
       [HttpPost]
       [ValidateAntiForgeryToken]
+      [Authorize(Roles = "Administrativo,Veterinario")]
       public async Task<IActionResult> Edit(int id, [Bind("ID,Nome,NumCedulaProf,Foto")] Veterinarios veterinarios) {
          if (id != veterinarios.ID) {
             return NotFound();
@@ -290,6 +298,7 @@ namespace ClinicaVet.Controllers {
 
 
       // GET: Veterinarios/Delete/5
+      [Authorize(Roles = "Administrativo")]
       public async Task<IActionResult> Delete(int? id) {
 
          if (id == null) {
@@ -320,6 +329,7 @@ namespace ClinicaVet.Controllers {
       // POST: Veterinarios/Delete/5
       [HttpPost, ActionName("Delete")]
       [ValidateAntiForgeryToken]
+      [Authorize(Roles = "Administrativo")]
       public async Task<IActionResult> DeleteConfirmed(int id) {
          var veterinarios = await db.Veterinarios.FindAsync(id);
          db.Veterinarios.Remove(veterinarios);

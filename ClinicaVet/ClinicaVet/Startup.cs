@@ -15,22 +15,27 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClinicaVet {
    public class Startup {
+
       public Startup(IConfiguration configuration) {
          Configuration = configuration;
       }
 
       public IConfiguration Configuration { get; }
 
+
       // This method gets called by the runtime. Use this method to add services to the container.
       public void ConfigureServices(IServiceCollection services) {
          services.AddDbContext<ApplicationDbContext>(options =>
-             options.UseSqlServer(
-                 Configuration.GetConnectionString("DefaultConnection")));
+             options.UseSqlServer(                 Configuration.GetConnectionString("DefaultConnection")));
+
          services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-             .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddRoles<IdentityRole>()  // necessário para que os  Roles sejam lidos e atribuídos ao User qd faz Login
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
          services.AddControllersWithViews();
          services.AddRazorPages();
       }
+
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
       public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
