@@ -10,9 +10,11 @@ using ClinicaVet.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClinicaVet.Controllers {
 
+   [Authorize]
    public class VeterinariosController : Controller {
 
       /// <summary>
@@ -36,6 +38,7 @@ namespace ClinicaVet.Controllers {
 
 
       // GET: Veterinarios
+      [AllowAnonymous]
       public async Task<IActionResult> Index() {
 
          // LINQ
@@ -46,6 +49,7 @@ namespace ClinicaVet.Controllers {
 
 
       // GET: Veterinarios
+      [AllowAnonymous]
       public async Task<IActionResult> Index2() {
 
          // LINQ
@@ -61,6 +65,7 @@ namespace ClinicaVet.Controllers {
       /// </summary>
       /// <param name="id">valor da PK do veterinário. Admite um valor Null, por causa do sinal ? </param>
       /// <returns></returns>
+      [AllowAnonymous]
       public async Task<IActionResult> Details(int? id) {
 
          if (id == null) {
@@ -93,6 +98,8 @@ namespace ClinicaVet.Controllers {
       /// </summary>
       /// <param name="id">valor da PK do veterinário. Admite um valor Null, por causa do sinal ? </param>
       /// <returns></returns>
+
+      [Authorize]
       public async Task<IActionResult> Details2(int? id) {
 
          if (id == null) {
@@ -134,6 +141,8 @@ namespace ClinicaVet.Controllers {
       /// invocar a View de criação de um novo Veterinário
       /// </summary>
       /// <returns></returns>
+
+      [Authorize]
       public IActionResult Create() {
          return View();
       }
@@ -151,6 +160,7 @@ namespace ClinicaVet.Controllers {
       /// <returns></returns>
       [HttpPost]
       [ValidateAntiForgeryToken]
+      [Authorize]
       public async Task<IActionResult> Create([Bind("ID,Nome,NumCedulaProf,Foto")] Veterinarios veterinario, IFormFile fotoVet) {
 
          //***************************************
