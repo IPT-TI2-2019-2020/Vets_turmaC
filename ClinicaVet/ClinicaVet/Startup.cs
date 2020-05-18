@@ -2,56 +2,41 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ClinicaVet.Data;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
+using ClinicaVet.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace ClinicaVet {
-
    public class Startup {
-
-
       public Startup(IConfiguration configuration) {
          Configuration = configuration;
       }
 
       public IConfiguration Configuration { get; }
 
-
-
-
-
       // This method gets called by the runtime. Use this method to add services to the container.
       public void ConfigureServices(IServiceCollection services) {
-
+         services.AddDbContext<ApplicationDbContext>(options =>
+             options.UseSqlServer(
+                 Configuration.GetConnectionString("DefaultConnection")));
+         services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+             .AddEntityFrameworkStores<ApplicationDbContext>();
          services.AddControllersWithViews();
-
-         //****************************************************************************
-         // especificação do 'tipo' e 'localização' da BD +
-         // ativação do 'lazy loading'
-         services.AddDbContext<VetsDB>(options => 
-              options
-                  .UseSqlServer(Configuration.GetConnectionString("ConnectionDB"))
-                 // .UseLazyLoadingProxies()
-         );
-         //****************************************************************************
-
+         services.AddRazorPages();
       }
-
-
-
-
-
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
       public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
          if (env.IsDevelopment()) {
             app.UseDeveloperExceptionPage();
+            app.UseDatabaseErrorPage();
          }
          else {
             app.UseExceptionHandler("/Home/Error");
@@ -63,14 +48,14 @@ namespace ClinicaVet {
 
          app.UseRouting();
 
+         app.UseAuthentication();
          app.UseAuthorization();
 
-         // especificar as ROTAS
-         // em particular, o Controller por defeito, e o Método por defeito, bem como o parâmetro de 'pesquisa' 
          app.UseEndpoints(endpoints => {
             endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+            endpoints.MapRazorPages();
          });
       }
    }

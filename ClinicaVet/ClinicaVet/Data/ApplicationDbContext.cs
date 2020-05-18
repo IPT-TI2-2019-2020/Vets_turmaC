@@ -1,24 +1,14 @@
-﻿using ClinicaVet.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
+using ClinicaVet.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClinicaVet.Data {
+   public class ApplicationDbContext : IdentityDbContext {
 
-
-   /// <summary>
-   /// Representa a BD do nosso sistema (Clínica Veterinária)
-   /// à custa de um ORM - Entity Framework Core
-   /// </summary>
-   public class VetsDB : DbContext {
-
-      /// <summary>
-      /// construtor que define e configura a Base de Dados
-      /// </summary>
-      /// <param name="options">parâmetros de configuração</param>
-      public VetsDB(DbContextOptions<VetsDB> options) : base(options) { }
+      public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
 
       // // ativação do Lazy Loading
@@ -32,7 +22,7 @@ namespace ClinicaVet.Data {
 
          base.OnModelCreating(modelBuilder);
 
-         
+
          // insert DB seed
          modelBuilder.Entity<Donos>().HasData(
             new Donos { ID = 1, Nome = "Luís Freitas", Sexo = "M", NIF = "813635582" },
@@ -98,6 +88,7 @@ namespace ClinicaVet.Data {
       public virtual DbSet<Donos> Donos { get; set; }
       public virtual DbSet<Veterinarios> Veterinarios { get; set; }
       public virtual DbSet<Consultas> Consultas { get; set; }
+
 
    }
 }
