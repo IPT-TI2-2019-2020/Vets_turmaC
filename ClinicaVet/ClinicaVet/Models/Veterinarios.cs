@@ -23,7 +23,7 @@ namespace ClinicaVet.Models {
       [StringLength(40, ErrorMessage = "O {0} só pode ter, no máximo, {1} carateres.")]
       [RegularExpression("[A-ZÁÍÓÚÉÂ][a-zãõáéíóúàèìòùäëïöüçâêîôû]+" +
          "(( | e |-|'| d'| de | d[ao](s)? )[A-ZÁÍÓÚÉÂ][a-zãõáéíóúàèìòùäëïöüçâêîôû]+){1,3}",
-            ErrorMessage ="Só são aceites letras. Cada palavra deve começar por uma Maiúscula, separadas por um espaço em branco.")]
+            ErrorMessage = "Só são aceites letras. Cada palavra deve começar por uma Maiúscula, separadas por um espaço em branco.")]
       public string Nome { get; set; }
 
       [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
@@ -33,13 +33,23 @@ namespace ClinicaVet.Models {
       [Display(Name = "Nº Cédula Profissional")]
       public string NumCedulaProf { get; set; }
 
-     // [Required]
+      // [Required]
       public string Foto { get; set; }
 
       /// <summary>
       ///  lista de 'consultas' a que o Veterinário está associado
       /// </summary>
       public virtual ICollection<Consultas> Consultas { get; set; }
+
+      // ******************************************************************
+
+      /// <summary>
+      /// atributo para referenciar o Utilizador que se autentica 
+      /// É uma FK, apesar de não ser definida de forma expressa
+      /// </summary>
+      public string UserID { get; set; }
+
+
 
    }
 }

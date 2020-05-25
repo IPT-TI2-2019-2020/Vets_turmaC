@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace ClinicaVet.Controllers {
 
@@ -27,10 +28,21 @@ namespace ClinicaVet.Controllers {
       /// </summary>
       private readonly IWebHostEnvironment _caminho;
 
+      /// <summary>
+      /// atributo que permite aceder aos dados da pessoa q está autenticada
+      /// </summary>
+      private readonly UserManager<ApplicationUser> _userManager;
 
-      public VeterinariosController(VetsDbContext context, IWebHostEnvironment caminho) {
+
+
+      public VeterinariosController(
+         VetsDbContext context, 
+         IWebHostEnvironment caminho,
+         UserManager<ApplicationUser> userManager
+         ) {
          this.db = context;
          this._caminho = caminho;
+         this._userManager = userManager;
       }
 
 
@@ -38,13 +50,24 @@ namespace ClinicaVet.Controllers {
 
 
       // GET: Veterinarios
-      [AllowAnonymous]
+      //  [AllowAnonymous]  // desativa a obrigatoriedade de haver autenticação
       public async Task<IActionResult> Index() {
 
-         // LINQ
-         // db.Veterinarios.ToListAsync()  <=>    SELECT * FROM Veterinarios;
+         // só o utilizador com Role = Administrativo é que pode aceder ao dados todos
+         if (User.IsInRole("Administrativo")) {
+            // LINQ
+            // db.Veterinarios.ToListAsync()  <=>    SELECT * FROM Veterinarios;
+            return View(await db.Veterinarios.ToListAsync());
+         }
 
-         return View(await db.Veterinarios.ToListAsync());
+         // e agora vamos só mostrar os dados da pessoa que se autenticou
+
+         // e, quem é que se autenticou?
+         Veterinarios veterinario = db.Veterinarios
+                                      .Where(v => v.UserID == _userManager.GetUserId(User))
+                                      .FirstOrDefault();
+
+         return RedirectToAction("Details", new { id = veterinario.ID });
       }
 
 
@@ -70,8 +93,8 @@ namespace ClinicaVet.Controllers {
 
          if (id == null) {
             // se o ID é null, é porque o meu utilizador está a testar a minha aplicação
-            // redireciono para o método INDEX deste mesmo controller
-            return RedirectToAction("Index");
+            // redireciono para o método INDEX do controller HOME
+            return RedirectToAction("Index", "Home");
          }
 
          // esta expressão db.Veterinarios.FirstOrDefaultAsync(m => m.ID == id)
@@ -83,8 +106,8 @@ namespace ClinicaVet.Controllers {
          if (veterinario == null) {
             // se o ID é null, é porque o meu utilizador está a testar a minha aplicação
             // ele introduziu manualmente um valor inexistente
-            // redireciono para o método INDEX deste mesmo controller
-            return RedirectToAction("Index");
+            // redireciono para o método INDEX do controller HOME
+            return RedirectToAction("Index", "Home");
          }
 
          return View(veterinario);
