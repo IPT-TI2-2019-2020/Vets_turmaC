@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ClinicaVet.Data.Migrations {
-   [DbContext(typeof(ApplicationDbContext))]
+   [DbContext(typeof(VetsDbContext))]
    [Migration("00000000000000_CreateIdentitySchema")]
    partial class CreateIdentitySchema {
       protected override void BuildTargetModel(ModelBuilder modelBuilder) {

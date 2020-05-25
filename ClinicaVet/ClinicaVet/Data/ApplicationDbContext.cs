@@ -2,13 +2,36 @@
 using System.Collections.Generic;
 using System.Text;
 using ClinicaVet.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicaVet.Data {
-   public class ApplicationDbContext : IdentityDbContext {
 
-      public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+   /// <summary>
+   /// Personalização dos dados pessoais do Utilizador
+   /// </summary>
+   public class ApplicationUser:IdentityUser {
+
+      /// <summary>
+      /// Nome pessoal do Utilizador autenticado
+      /// </summary>
+      public string Nome { get; set; }
+
+      /// <summary>
+      /// Nome do ficheiro com a fotografia do Utilizador
+      /// </summary>
+      public string Fotografia{ get; set; }
+
+      /// <summary>
+      /// Data em que o Registo foi criado
+      /// </summary>
+      public DateTime Timestamp { get; set; }
+   }
+
+   public class VetsDbContext : IdentityDbContext<ApplicationUser> {
+
+      public VetsDbContext(DbContextOptions<VetsDbContext> options) : base(options) { }
 
 
       // // ativação do Lazy Loading

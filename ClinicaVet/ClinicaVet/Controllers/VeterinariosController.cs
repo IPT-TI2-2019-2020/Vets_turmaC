@@ -20,7 +20,7 @@ namespace ClinicaVet.Controllers {
       /// <summary>
       /// este atributo representa uma referência à nossa base de dados
       /// </summary>
-      private readonly ApplicationDbContext db;
+      private readonly VetsDbContext db;
 
       /// <summary>
       /// atributo que recolhe nele os dados do Servidor
@@ -28,7 +28,7 @@ namespace ClinicaVet.Controllers {
       private readonly IWebHostEnvironment _caminho;
 
 
-      public VeterinariosController(ApplicationDbContext context, IWebHostEnvironment caminho) {
+      public VeterinariosController(VetsDbContext context, IWebHostEnvironment caminho) {
          this.db = context;
          this._caminho = caminho;
       }
