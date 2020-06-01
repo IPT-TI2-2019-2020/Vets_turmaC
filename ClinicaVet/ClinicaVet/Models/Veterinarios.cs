@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ClinicaVet.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +18,7 @@ namespace ClinicaVet.Models {
       // https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations?view=netcore-3.1
 
 
-      [Key]
+      // [Key]
       public int ID { get; set; }
 
       [Required(ErrorMessage = "O Nome é de preenchimento obrigatório")]
@@ -43,11 +45,13 @@ namespace ClinicaVet.Models {
 
       // ******************************************************************
 
+
       /// <summary>
-      /// atributo para referenciar o Utilizador que se autentica 
-      /// É uma FK, apesar de não ser definida de forma expressa
+      /// Relaciona os dados do Veterinário com a pessoa que se autentica
       /// </summary>
-      public string UserID { get; set; }
+      [ForeignKey(nameof(Utilizador))]
+      public int? UtilizadorFK { get; set; }
+      public Utilizadores Utilizador { get; set; }
 
 
 

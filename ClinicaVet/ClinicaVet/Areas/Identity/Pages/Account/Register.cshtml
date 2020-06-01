@@ -35,11 +35,26 @@
 
           @* perguntar o nome do Utilizador *@
           <div class="form-group">
-             <label asp-for="Input.Nome"></label>
-             <input asp-for="Input.Nome" class="form-control" />
-             <span asp-validation-for="Input.Nome" class="text-danger"></span>
+             <label asp-for="Input.Utilizador.Nome"></label>
+             <input asp-for="Input.Utilizador.Nome" class="form-control" />
+             <span asp-validation-for="Input.Utilizador.Nome" class="text-danger"></span>
           </div>
-
+          <div class="form-group">
+             <label asp-for="Input.Utilizador.Morada"></label>
+             <input asp-for="Input.Utilizador.Morada" class="form-control" />
+             <span asp-validation-for="Input.Utilizador.Morada" class="text-danger"></span>
+          </div>
+          <div class="form-group">
+             <label asp-for="Input.Utilizador.CodPostal"></label>
+             <input asp-for="Input.Utilizador.CodPostal" class="form-control" />
+             <span asp-validation-for="Input.Utilizador.CodPostal" class="text-danger"></span>
+          </div>
+          <div class="form-group">
+             <label asp-for="Input.Utilizador.Telemovel"></label>
+             <input asp-for="Input.Utilizador.Telemovel" class="form-control" />
+             <span asp-validation-for="Input.Utilizador.Telemovel" class="text-danger"></span>
+          </div>
+         
           @* permitir o FileUpload do ficheiro com a 'fotografia' do Utilizador *@
           <div class="form-group">
              <label class="control-label">Fotografia</label>

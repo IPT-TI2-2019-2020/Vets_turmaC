@@ -405,6 +405,7 @@ namespace ClinicaVet.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("NIF")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nome")
@@ -490,6 +491,41 @@ namespace ClinicaVet.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ClinicaVet.Models.Utilizadores", b =>
+                {
+                    b.Property<int>("IdUtilizadores")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CodPostal")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fotografia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Morada")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(40)")
+                        .HasMaxLength(40);
+
+                    b.Property<string>("Telemovel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdUtilizadores");
+
+                    b.ToTable("Utilizadores");
+                });
+
             modelBuilder.Entity("ClinicaVet.Models.Veterinarios", b =>
                 {
                     b.Property<int>("ID")
@@ -510,10 +546,12 @@ namespace ClinicaVet.Data.Migrations
                         .HasColumnType("nvarchar(10)")
                         .HasMaxLength(10);
 
-                    b.Property<string>("UserID")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("UtilizadorFK")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("UtilizadorFK");
 
                     b.ToTable("Veterinarios");
 
@@ -698,6 +736,13 @@ namespace ClinicaVet.Data.Migrations
                         .HasForeignKey("VeterinarioFK")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ClinicaVet.Models.Veterinarios", b =>
+                {
+                    b.HasOne("ClinicaVet.Models.Utilizadores", "Utilizador")
+                        .WithMany()
+                        .HasForeignKey("UtilizadorFK");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

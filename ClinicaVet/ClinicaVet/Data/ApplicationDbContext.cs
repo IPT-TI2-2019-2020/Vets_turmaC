@@ -112,6 +112,7 @@ namespace ClinicaVet.Data {
       public virtual DbSet<Veterinarios> Veterinarios { get; set; }
       public virtual DbSet<Consultas> Consultas { get; set; }
 
+      public virtual DbSet<Utilizadores> Utilizadores { get; set; }
 
    }
 }

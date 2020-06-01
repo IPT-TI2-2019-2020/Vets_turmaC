@@ -3,12 +3,23 @@
 @inject UserManager<ClinicaVet.Data.ApplicationUser> UserManager
 @* Nestas duas linhas anteriores é, também, necessário alterar o termo 'IdentityUser' por 'Application User' *@
 
+@{ 
+   // recuperar dados sobre o utilizador
+   string nome=(await UserManager.GetUserAsync(User)).Nome       ;
+   string foto = (await UserManager.GetUserAsync(User)).Fotografia;
+}
+
+
 
 <ul class="navbar-nav">
    @if (SignInManager.IsSignedIn(User)) {
-      <li class="nav-item">
-         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
-      </li>
+   <li class="nav-item">
+      @* <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a> *@
+      <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+         <img src="~/Imagens/Vets/@foto" height="30" />
+         Olá @nome!
+      </a>
+   </li>
       <li class="nav-item">
          <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
             <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
@@ -17,7 +28,7 @@
    }
    else {
       <li class="nav-item">
-         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Registar</a>
       </li>
       <li class="nav-item">
          <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>

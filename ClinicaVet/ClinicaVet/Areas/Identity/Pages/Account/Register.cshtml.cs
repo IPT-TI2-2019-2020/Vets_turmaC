@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using ClinicaVet.Models;
 
 namespace ClinicaVet.Areas.Identity.Pages.Account {
    [AllowAnonymous]
@@ -23,15 +24,23 @@ namespace ClinicaVet.Areas.Identity.Pages.Account {
       private readonly ILogger<RegisterModel> _logger;
       private readonly IEmailSender _emailSender;
 
+      /// <summary>
+      /// este atributo representa uma referência à nossa base de dados
+      /// </summary>
+      private readonly VetsDbContext db;
+
       public RegisterModel(
           UserManager<ApplicationUser> userManager,
           SignInManager<ApplicationUser> signInManager,
           ILogger<RegisterModel> logger,
-          IEmailSender emailSender) {
+          IEmailSender emailSender,
+           VetsDbContext context
+         ) {
          _userManager = userManager;
          _signInManager = signInManager;
          _logger = logger;
          _emailSender = emailSender;
+         db = context;
       }
 
       [BindProperty]
@@ -41,6 +50,10 @@ namespace ClinicaVet.Areas.Identity.Pages.Account {
 
       public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
+
+      /// <summary>
+      /// classe para recolher os dados de um novo Utilizador
+      /// </summary>
       public class InputModel {
          [Required]
          [EmailAddress]
@@ -58,14 +71,11 @@ namespace ClinicaVet.Areas.Identity.Pages.Account {
          [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
          public string ConfirmPassword { get; set; }
 
-         // **********************************************
+         // **************************************************************
+         // atributos extra, que serão associados à classe dos Utilizadores
+         // **************************************************************
 
-         [Required(ErrorMessage = "O Nome é de preenchimento obrigatório")]
-         [StringLength(40, ErrorMessage = "O {0} só pode ter, no máximo, {1} carateres.")]
-         [RegularExpression("[A-ZÁÍÓÚÉÂ][a-zãõáéíóúàèìòùäëïöüçâêîôû]+" +
-         "(( | e |-|'| d'| de | d[ao](s)? )[A-ZÁÍÓÚÉÂ][a-zãõáéíóúàèìòùäëïöüçâêîôû]+){1,3}",
-            ErrorMessage = "Só são aceites letras. Cada palavra deve começar por uma Maiúscula, separadas por um espaço em branco.")]
-         public string Nome { get; set; }
+         public Utilizadores Utilizador { get; set; }
 
       }
 
@@ -87,12 +97,16 @@ namespace ClinicaVet.Areas.Identity.Pages.Account {
          if (ModelState.IsValid) {
 
             // adicionar o código para processar o ficheiro com a imagem do User
+            // copiar para aqui o código feito no Create Veterinário
+            bool haFicheiro = false;
+            string auxNomeFotografia = "avatar.png";
+
 
             var user = new ApplicationUser {
                UserName = Input.Email,
-               Email = Input.Email,
-               Nome = Input.Nome,
-               Fotografia = "", // para a Fotografia será necessário executar uma ação semelhante ao que fizemos no Create do Veterinário
+               //  Email = Input.Email,
+               Nome = Input.Utilizador.Nome,
+               Fotografia = auxNomeFotografia, // para a Fotografia será necessário executar uma ação semelhante ao que fizemos no Create do Veterinário
                Timestamp = DateTime.Now,
             };
 
@@ -102,6 +116,26 @@ namespace ClinicaVet.Areas.Identity.Pages.Account {
             if (result.Succeeded) {
                // houve sucesso na criação do utilizador
                _logger.LogInformation("User created a new account with password.");
+
+               // criar, na BD, um registo com os dados (Nome, email, morada, etc., etc....) do novo Utilizador
+
+               Utilizadores novoUtilizador = Input.Utilizador;
+               novoUtilizador.Email = Input.Email;
+               novoUtilizador.Fotografia = auxNomeFotografia;
+               // e não esquecer, ligar este 'Utilizador' a quem fez o Registo
+               novoUtilizador.UserID = user.Id;
+
+               // adicionar estes dados e guardar na BD
+               // adiciona o novo Utilizador à BD, mas na memória do servidor ASP .NET
+               db.Add(novoUtilizador);
+               // consolida os dados no Servidor BD (commit)
+               await db.SaveChangesAsync();
+               // será q há foto para gravar?
+               if (haFicheiro) {
+                  //using var stream = new FileStream(caminhoCompleto, FileMode.Create);
+                  //await fotoVet.CopyToAsync(stream);
+               }
+
 
                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

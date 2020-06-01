@@ -3,10 +3,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ClinicaVet.Data.Migrations
 {
-    public partial class AutenticacaoPlusOtherClasses : Migration
+    public partial class CorrecaoProblemas : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "Fotografia",
+                table: "AspNetUsers",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Nome",
+                table: "AspNetUsers",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "Timestamp",
+                table: "AspNetUsers",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+
             migrationBuilder.CreateTable(
                 name: "Donos",
                 columns: table => new
@@ -15,7 +31,7 @@ namespace ClinicaVet.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(nullable: true),
                     Sexo = table.Column<string>(nullable: true),
-                    NIF = table.Column<string>(nullable: true)
+                    NIF = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -23,18 +39,22 @@ namespace ClinicaVet.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Veterinarios",
+                name: "Utilizadores",
                 columns: table => new
                 {
-                    ID = table.Column<int>(nullable: false)
+                    IdUtilizadores = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(maxLength: 40, nullable: false),
-                    NumCedulaProf = table.Column<string>(maxLength: 10, nullable: false),
-                    Foto = table.Column<string>(nullable: true)
+                    Morada = table.Column<string>(nullable: true),
+                    CodPostal = table.Column<string>(nullable: true),
+                    Telemovel = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    Fotografia = table.Column<string>(nullable: true),
+                    UserID = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Veterinarios", x => x.ID);
+                    table.PrimaryKey("PK_Utilizadores", x => x.IdUtilizadores);
                 });
 
             migrationBuilder.CreateTable(
@@ -58,6 +78,28 @@ namespace ClinicaVet.Data.Migrations
                         column: x => x.DonoFK,
                         principalTable: "Donos",
                         principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Veterinarios",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(maxLength: 40, nullable: false),
+                    NumCedulaProf = table.Column<string>(maxLength: 10, nullable: false),
+                    Foto = table.Column<string>(nullable: true),
+                    UtilizadorFK = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Veterinarios", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Veterinarios_Utilizadores_UtilizadorFK",
+                        column: x => x.UtilizadorFK,
+                        principalTable: "Utilizadores",
+                        principalColumn: "IdUtilizadores",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -80,13 +122,13 @@ namespace ClinicaVet.Data.Migrations
                         column: x => x.AnimalFK,
                         principalTable: "Animais",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Consultas_Veterinarios_VeterinarioFK",
                         column: x => x.VeterinarioFK,
                         principalTable: "Veterinarios",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -108,12 +150,12 @@ namespace ClinicaVet.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Veterinarios",
-                columns: new[] { "ID", "Foto", "Nome", "NumCedulaProf" },
+                columns: new[] { "ID", "Foto", "Nome", "NumCedulaProf", "UtilizadorFK" },
                 values: new object[,]
                 {
-                    { 1, "Maria.jpg", "Maria Pinto", "vet-034589" },
-                    { 2, "Ricardo.jpg", "Ricardo Ribeiro", "vet-034590" },
-                    { 3, "Jose.jpg", "José Soares", "vet-056732" }
+                    { 1, "Maria.jpg", "Maria Pinto", "vet-034589", null },
+                    { 2, "Ricardo.jpg", "Ricardo Ribeiro", "vet-034590", null },
+                    { 3, "Jose.jpg", "José Soares", "vet-056732", null }
                 });
 
             migrationBuilder.InsertData(
@@ -174,6 +216,11 @@ namespace ClinicaVet.Data.Migrations
                 name: "IX_Consultas_VeterinarioFK",
                 table: "Consultas",
                 column: "VeterinarioFK");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Veterinarios_UtilizadorFK",
+                table: "Veterinarios",
+                column: "UtilizadorFK");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -189,6 +236,21 @@ namespace ClinicaVet.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Donos");
+
+            migrationBuilder.DropTable(
+                name: "Utilizadores");
+
+            migrationBuilder.DropColumn(
+                name: "Fotografia",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "Nome",
+                table: "AspNetUsers");
+
+            migrationBuilder.DropColumn(
+                name: "Timestamp",
+                table: "AspNetUsers");
         }
     }
 }

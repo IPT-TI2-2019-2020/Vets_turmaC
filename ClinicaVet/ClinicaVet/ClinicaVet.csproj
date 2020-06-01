@@ -6,6 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Migrations\20200518190625_AutenticacaoPlusOtherClasses.cs" />
+    <Compile Remove="Data\Migrations\20200518190625_AutenticacaoPlusOtherClasses.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200525190016_PersonalizacaoUserAutenticado.cs" />
+    <Compile Remove="Data\Migrations\20200525190016_PersonalizacaoUserAutenticado.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200525210512_AssociarVetrinariosAutenticacao.cs" />
+    <Compile Remove="Data\Migrations\20200525210512_AssociarVetrinariosAutenticacao.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200601205750_Heranca.cs" />
+    <Compile Remove="Data\Migrations\20200601205750_Heranca.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200601210502_CorrecaoProblemas.cs" />
+    <Compile Remove="Data\Migrations\20200601210502_CorrecaoProblemas.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200601210638_CorrecaoProblemas.cs" />
+    <Compile Remove="Data\Migrations\20200601210638_CorrecaoProblemas.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.3" />

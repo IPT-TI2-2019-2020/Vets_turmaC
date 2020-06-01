@@ -64,7 +64,7 @@ namespace ClinicaVet.Controllers {
 
          // e, quem é que se autenticou?
          Veterinarios veterinario = db.Veterinarios
-                                      .Where(v => v.UserID == _userManager.GetUserId(User))
+                                      .Where(v =>v.Utilizador.UserID == _userManager.GetUserId(User))
                                       .FirstOrDefault();
 
          return RedirectToAction("Details", new { id = veterinario.ID });

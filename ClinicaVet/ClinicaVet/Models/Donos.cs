@@ -12,7 +12,7 @@ namespace ClinicaVet.Models {
          ListaDeAnimais = new HashSet<Animais>();
       }
 
-      [Key]
+   //   [Key]
       public int ID { get; set; }
 
       public string Nome { get; set; }
@@ -20,6 +20,7 @@ namespace ClinicaVet.Models {
       public string Sexo { get; set; }
 
       [RegularExpression("[12356][0-9]{8}")]
+      [Required]
       public string NIF { get; set; }
 
       /// <summary>
