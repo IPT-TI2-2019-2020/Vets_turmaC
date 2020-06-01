@@ -104,7 +104,7 @@ namespace ClinicaVet.Areas.Identity.Pages.Account {
 
             var user = new ApplicationUser {
                UserName = Input.Email,
-               //  Email = Input.Email,
+               Email = Input.Email,
                Nome = Input.Utilizador.Nome,
                Fotografia = auxNomeFotografia, // para a Fotografia será necessário executar uma ação semelhante ao que fizemos no Create do Veterinário
                Timestamp = DateTime.Now,
